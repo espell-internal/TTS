@@ -9,16 +9,16 @@ import os
 
 # Azure Keys (replace with espell's)
 AZURE_SPEECH_KEY = ""
-AZURE_REGION = ""
+AZURE_REGION = "westeurope"
 
 # Excel source file — your exact path
-XLSX_FILE = Path("")
+XLSX_FILE = Path("/Users/palszirmai/Documents/AFI_003/AFI_003_text_prepped.xlsx")
 
 # 🔧 EDIT THIS LINE TO CHOOSE WHICH SHEET TO READ
-SHEET_NAME = ""   # ← change this to any sheet name
+SHEET_NAME = "ENG_korr"   # ← change this to any sheet name
 
 # Base output folder
-BASE_OUTPUT_DIR = Path("")
+BASE_OUTPUT_DIR = Path("/Users/palszirmai/Documents/AFI_003/")
 
 # Output folder = 
 OUTPUT_DIR = BASE_OUTPUT_DIR / SHEET_NAME
@@ -78,26 +78,26 @@ def synthesize_audio(voice_name, text, output_path):
 def process_sheet(xlsx_file, sheet_name):
     df = pd.read_excel(xlsx_file, sheet_name=sheet_name)
 
-    # Columns:
-    # A → filename
-    # B → voice name
-    # C → text
     for idx, row in df.iterrows():
-        filename = str(row[0]).strip()
-        voice = str(row[1]).strip()
-        text = str(row[2]).strip()
+        filename = str(row.iloc[0]).strip()
+        voice    = str(row.iloc[1]).strip()
+        text     = str(row.iloc[2]).strip()
+
 
         # Ensure WAV extension
         if not filename.lower().endswith(".wav"):
             filename += ".wav"
 
         output_path = OUTPUT_DIR / filename
-        synthesize_audio(voice, text, output_path)
 
- # 🔍 Skip if file exists
+        # 🔍 Skip if file exists (CHECK FIRST)
         if output_path.exists():
             print(f"⏭️ Skipping (already exists): {filename}")
             continue
+
+        # Generate file only if it doesn't exist
+        synthesize_audio(voice, text, output_path)
+
 
 # =====================================
 # 5️⃣ RUN
